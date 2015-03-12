@@ -1,5 +1,5 @@
 # PHP code obfuscator
-A simple and easy to use PHP code obfuscator that ~~doesn't~~ shouldn't break your projects code. Deploy your project's without being afraid of unwanted copies or changes by 3rd party developers without your consent.
+A simple and easy to use PHP code obfuscator that ~~doesn't~~ shouldn't break your project's code. Deploy your projects without being afraid of unwanted copies or changes by 3rd party developers without your consent.
 
 ___
 

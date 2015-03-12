@@ -31,9 +31,9 @@
  * - tests with different platforms (Windows, Mac, Linux)
  * - ...
  */
- 
+
 require_once 'Utilities.php';
- 
+
 class Obfuscator
 {
 	private $settings = array(
@@ -71,13 +71,46 @@ class Obfuscator
 	 * run the code obfuscator
 	 */
 	public function run(){
-		$this->buildCopyOfProject();
-		$this->indexAllFiles($this->getSetting('destination_dir'));
-		$this->tokenizeIndexedFilesContent();
-		$this->obfuscateCode();
+        if($this->checkSettings()){
+    		$this->buildCopyOfProject();
+    		$this->indexAllFiles($this->getSetting('destination_dir'));
+    		$this->tokenizeIndexedFilesContent();
+    		$this->obfuscateCode();
 
-		echo "Project has successfully been obfuscated.<br>Destination: ".$this->getSetting('destination_dir');
+    		echo "Project has successfully been obfuscated.<br>Destination: ".$this->getSetting('destination_dir');
+        }
+        else {
+            echo "Error with the settings.";
+        }
 	}
+
+    /**
+     * checks the settings and corrects possible errors
+     * @return boolean
+     */
+    private function checkSettings(){
+        $return = true;
+
+        //change windows path to unix-style path
+        if (DIRECTORY_SEPARATOR != '/') {
+            $this->setSetting('source_dir',str_replace(DIRECTORY_SEPARATOR,'/',$this->getSetting('source_dir')));
+            $this->setSetting('destination_dir',str_replace(DIRECTORY_SEPARATOR,'/',$this->getSetting('destination_dir')));
+        }
+
+        //set paths with slash at the end
+        if(substr($this->getSetting('source_dir'),-1) != "/"){
+            $this->setSetting('source_dir',$this->getSetting('source_dir')."/");
+        }
+        if(substr($this->getSetting('destination_dir'),-1) != "/"){
+            $this->setSetting('destination_dir',$this->getSetting('destination_dir')."/");
+        }
+
+        //check if the source directory exists
+        if(!file_exists($this->getSetting('source_dir'))){
+            $return = false;
+        }
+        return $return;
+    }
 
 	/**
 	 * build a copy of the source_dir in the destination_dir
@@ -284,11 +317,24 @@ class Obfuscator
 		}
 	}
 
+    /**
+	 * sets a settings-value based on a given key
+	 */
+	public function setSetting($key,$value){
+        if(array_key_exists($key, $this->settings)){
+            $this->settings[$key] = $value;
+        }
+	}
+
 	/**
 	 * returns a settings-value based on a given key
 	 */
-	private function getSetting($key){
-		return $this->settings[$key];
+	public function getSetting($key){
+        $value = null;
+        if(array_key_exists($key, $this->settings)){
+            $value = $this->settings[$key];
+        }
+        return $value;
 	}
 
     /**
